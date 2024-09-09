@@ -1,0 +1,14 @@
+{
+    "[typescript][typescriptreact]": {
+      "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit",
+        "source.sortImports": "explicit"
+      },
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true
+    },
+    "typescript.format.enable": false,
+    "typescript.preferences.importModuleSpecifier": "shortest",
+    "typescript.tsdk": "./node_modules/typescript/lib",
+    "typescript.updateImportsOnFileMove.enabled": "always"
+  }

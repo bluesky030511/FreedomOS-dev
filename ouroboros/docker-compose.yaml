@@ -1,0 +1,57 @@
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:16
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: rubic
+      POSTGRES_USER: developer
+      POSTGRES_PASSWORD: rubicdeveloper
+    networks:
+      - backend
+    ports:
+      - 5432:5432
+
+  mongo:
+    container_name: mongo
+    image: mongo:5.0.27
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=rubic
+      - MONGO_INITDB_ROOT_USERNAME=developer
+      - MONGO_INITDB_ROOT_PASSWORD=rubicdeveloper
+    networks:
+      - backend
+    ports:
+      - 27017:27017
+  
+
+      
+  ouroboros:
+    container_name: ouroboros
+    hostname: ouroboros
+    depends_on:
+      - postgres
+      - mongo
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/ouroboros
+    env_file:
+      - ./.env
+    networks:
+      - backend
+    command: faststream run server:app --reload
+
+volumes:
+  postgres_data:
+    name: postgres_data
+  mongo_data:
+    name: mongo_data
+
+networks:
+  backend:
+    name: backend

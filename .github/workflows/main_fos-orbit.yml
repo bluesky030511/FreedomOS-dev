@@ -1,0 +1,42 @@
+name: Freedom OS Orbit | Build and Deploy To Azure Container App
+
+# When this action will be executed
+on:
+  # Automatically trigger it when detected changes in repo
+  push:
+    branches:
+      [ main ]
+    paths:
+    - 'orbit/**'
+    - '.github/workflows/fos-orbit-AutoDeployTrigger-caab236e-a3df-4e28-af72-de5c51abf068.yml'
+
+  # Allow manual trigger
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout to the branch
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.FOSORBIT_AZURE_CREDENTIALS }}
+
+      - name: Build and push container image to registry
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          appSourcePath: ${{ github.workspace }}/orbit
+          registryUrl: rubiccontainerregistry.azurecr.io
+          registryUsername: ${{ secrets.FOSORBIT_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.FOSORBIT_REGISTRY_PASSWORD }}
+          containerAppName: fos-orbit
+          resourceGroup: NetworkWatcherRG
+          imageToBuild: rubiccontainerregistry.azurecr.io/fos-orbit:${{ github.sha }}
+          dockerfilePath: Dockerfile
+
+
+

@@ -1,0 +1,23 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"    # RabbitMQ port
+      - "15672:15672"  # RabbitMQ management plugin web UI
+    networks:
+      - app-network
+
+  robot_publisher:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: robot_publisher
+    depends_on:
+      - rabbitmq
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

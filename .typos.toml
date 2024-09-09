@@ -1,0 +1,10 @@
+[files]
+extend-exclude = ["**/test/data/**/*.json"]
+
+[default]
+extend-ignore-re = [
+    "ObjectId(.*)",
+]
+
+[default.extend-words]
+technic = "technic"

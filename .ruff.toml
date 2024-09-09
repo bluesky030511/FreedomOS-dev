@@ -1,0 +1,52 @@
+line-length = 88
+indent-width = 4
+target-version = "py311"
+src = ["ouroboros"]
+
+[lint]
+preview = true
+
+select = ["ALL"]
+
+ignore = [
+    # These will be enabled later
+    "DOC",
+    "TRY002",  # Create your own exception
+    # These will not
+    "ANN002",  # Missing type annotation for `*args`
+    "ANN003",  # Missing type annotation for `**kwargs`
+    "ANN204",  # Missing return type annotation for special method `__init__`
+    "ANN401",  # Allow typing.Any
+    "COM812",  # Trailing comma missing"
+    "EM10",    # Exception must not use a string literal, assign to variable first"
+    "FIX002",  # Line contains TODO, consider resolving the issue
+    "PLE1205", # This doesn't work with loguru
+    "PT019",   # Fixture without value is injected as parameter, use `@pytest.mark.usefixtures` instead'
+    "S311",    # Standard pseudo-random generators are not suitable for cryptographic purposes
+    "TD002",   # Missing author in TODO
+    "TD003",   # Missing issue link on the line following TODO
+    "TRY003",  # Avoid specifying long messages outside the exception class
+]
+
+extend-safe-fixes = ["D415"]
+unfixable = ["F401"]
+
+[format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+
+[lint.pydocstyle]
+convention = "google"
+
+[lint.pylint]
+max-args = 6
+max-locals = 30
+
+[lint.flake8-pytest-style]
+mark-parentheses = false
+
+[lint.extend-per-file-ignores]
+"__init__.py" = ["F401", "F403", "D104"]
+"**/test/*" = ["D1", "S101", "PLR2004"]
+"**/tools/*" = ["ERA"]

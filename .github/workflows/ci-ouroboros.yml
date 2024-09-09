@@ -1,0 +1,91 @@
+name: CI Ouroboros
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+    paths:
+      - 'ouroboros/**'
+  pull_request:
+    branches:
+      - main
+      - dev
+    paths:
+      - 'ouroboros/**'
+
+concurrency:
+  group: ci-ouroboros-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Check for typos
+        uses: crate-ci/typos@v1.24.3
+
+      - name: Run linter
+        uses: chartboost/ruff-action@v1
+        with:
+          src: ./ouroboros
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        working-directory: ./ouroboros
+        run: |
+          pip install uv
+          uv pip install -r requirements/dev-linux.txt --system
+
+      - name: Run type checking
+        working-directory: ./ouroboros
+        run: pyright
+
+      - name: Run tests
+        working-directory: ./ouroboros
+        run: pytest
+
+      - name: Generate coverage badge
+        if: github.event_name == 'push'
+        working-directory: ./ouroboros
+        run: |
+          pip install git+https://github.com/therubic-canada/coverage-aggregator.git
+          generate-coverage-badge coverage.json coverage.svg
+
+      # Push the coverage data to assets branch
+      - name: Checkout assets branch
+        if: github.event_name == 'push'
+        uses: actions/checkout@v4
+        with:
+          ref: "assets"
+          path: "assets"
+
+      - name: Update coverage
+        if: github.event_name == 'push'
+        continue-on-error: true
+        run: |
+          rm -rf ${{ github.workspace }}/assets/coverage_reports/${{ github.ref_name }}/*
+          rm ${{ github.workspace }}/assets/badges/${{ github.ref_name }}/coverage.svg
+          rm ${{ github.workspace }}/ouroboros/htmlcov/.gitignore
+          mv ${{ github.workspace }}/ouroboros/htmlcov/* ${{ github.workspace }}/assets/coverage_reports/${{ github.ref_name }}
+          mv ${{ github.workspace }}/ouroboros/coverage.svg ${{ github.workspace }}/assets/badges/${{ github.ref_name }}
+          cd assets
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add coverage_reports/${{ github.ref_name }} badges/${{ github.ref_name }}
+          git commit -m "Update coverage"
+
+      - name: Push to assets branch
+        if: github.event_name == 'push'
+        uses: ad-m/github-push-action@master
+        with:
+          branch: assets
+          directory: "${{ github.workspace }}/assets"

@@ -1,0 +1,47 @@
+[
+    {
+        "_id": {
+            "$oid": "651c47b7216d779abc113cdd"
+        },
+        "vendor": "NLS",
+        "meta": {
+            "item_type": "conveyor",
+            "available": true
+        },
+        "predetermined": true,
+        "generic_type": "STORE_DESIGNATED",
+        "item_uuid": "5537a696-6a91-4f66-ba54-6fc472aa9328",
+        "job_type": "INT2"
+    },
+    {
+        "_id": {
+            "$oid": "651f1b2b216d779abc113d2a"
+        },
+        "vendor": "RUBIC",
+        "predetermined": false,
+        "generic_type": "STORE_INVENTORY",
+        "job_type": "STORE_INVENTORY"
+    },
+    {
+        "_id": {
+            "$oid": "652e9f5c216d779abc113d37"
+        },
+        "vendor": "RUBIC",
+        "predetermined": false,
+        "generic_type": "FETCH_INVENTORY",
+        "job_type": "FETCH_INVENTORY"
+    },
+    {
+        "_id": {
+            "$oid": "657b8d91642da5a5b3411192"
+        },
+        "vendor": "NLS",
+        "meta": {
+            "type": "box"
+        },
+        "predetermined": true,
+        "generic_type": "FETCH_DESIGNATED",
+        "item_uuid": "5d62cadd-764a-4bb7-9839-739211ae1863",
+        "job_type": "INT1"
+    }
+]

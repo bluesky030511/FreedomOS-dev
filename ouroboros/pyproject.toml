@@ -1,0 +1,58 @@
+[project]
+name = "ouroboros"
+version = "0.0.1"
+requires-python = ">=3.11"
+dependencies = [
+    "aio-pika",
+    "azure-identity",
+    "azure-keyvault-secrets",
+    "azure-storage-blob",
+    "faststream",
+    "loguru",
+    "numpy",
+    "pillow",
+    "pydantic",
+    "pymongo",
+    "python-dotenv",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pika",
+    "coverage",
+    "mongomock @ git+https://github.com/mongomock/mongomock",
+    "pyright",
+    "pytest",
+    "pytest-asyncio",
+    "pytest-cov",
+    "watchfiles"
+]
+
+[tool.uv.pip]
+python-version = "3.11"
+generate-hashes = true
+
+[tool.pytest.ini_options]
+log_cli = true
+log_cli_level = "INFO"
+addopts = "--capture=no --cov-report html --cov-report json --cov=."
+
+[tool.coverage.run]
+branch = true
+omit = [
+    "test/*",
+    "tools/*",
+]
+
+[tool.coverage.report]
+exclude_also = [
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+    "@(abc\\.)?abstractmethod",
+]
+
+[tool.pyright]
+ignore = ["test/*"]
+reportUnnecessaryTypeIgnoreComment = true
+reportOptionalMemberAccess = false

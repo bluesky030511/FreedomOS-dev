@@ -1,0 +1,160 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("MONGODB_CONNECTION_STRING")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+type Meta {
+    side String
+    aisle_index Int
+}
+
+type Request {
+    vendor String
+    item_type String?
+    user_id String
+    debug Boolean
+}
+
+type Vector3 {
+    x Float
+    y Float
+    z Float
+}
+
+type Timestamp {
+    sec Int
+    nanosec Int
+}
+
+
+type Header {
+    stamp Timestamp
+    frame_id String
+}
+
+type BarcodeMeta {
+    barcode_type String
+    data String
+    scan_id String?
+    aisle_index Int
+}
+
+type BarcodeAbsolute {
+    position Vector3
+    dimension Vector3
+    aligned_axis String
+}
+
+type BarcodeRelative {
+    header Header?
+    position Vector3
+    dimension Vector3
+    side String
+}
+
+type Barcode {
+    meta BarcodeMeta
+    absolute BarcodeAbsolute
+    relative BarcodeRelative
+    item_uuid String
+}
+
+type ItemMeta {
+    item_type String
+    stack String[]
+    location String
+    destination String?
+    available Boolean
+    aisle_index Int
+    scan_id String?
+}
+
+type ItemAbsolute {
+    depth_index Int?
+    stack_index Int?
+    position Vector3
+    waypoint String?
+    aligned_axis String
+}
+
+type ItemRelative {
+    dimension Vector3
+    side String
+}
+
+type Item {
+    barcodes Barcode[]
+    meta ItemMeta
+    absolute ItemAbsolute
+    relative ItemRelative
+    uuid String
+}
+
+type ImageMeta {
+    x Float
+    y Float
+    width Float
+    height Float
+    container_name String
+    blob_name String
+}
+
+type DataEntry {
+    item Item
+    x0 Float
+    y0 Float
+    x1 Float
+    y1 Float
+}
+
+model Render {
+    id String @id @default(auto()) @map("_id") @db.ObjectId
+    request Request
+    meta Meta
+    data DataEntry[]
+    img_meta ImageMeta
+    created_at_utc Float
+
+    @@map("renders")
+}
+
+
+type JobTranslationMeta {
+    item_type String
+    available Boolean?
+}
+
+enum JobType {
+    STORE_INVENTORY
+    STORE_DESIGNATED
+    FETCH_INVENTORY
+    FETCH_DESIGNATED
+}
+
+model JobTranslation {
+    id String @id @default(auto()) @map("_id") @db.ObjectId
+    vendor String
+    meta JobTranslationMeta?
+    predetermined Boolean
+    generic_type String
+    item_uuid String?
+    job_type String
+
+    @@map("job_translation")
+}
+
+
+model InventoryItems {
+    id String @id @default(auto()) @map("_id") @db.ObjectId
+    barcodes Barcode[]
+    meta ItemMeta
+    absolute ItemAbsolute
+    relative ItemRelative
+    uuid String
+
+    @@map("inventory_items")
+}
